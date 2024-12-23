@@ -8,7 +8,7 @@ import 'food.dart';
 import '../constants/game_constants.dart';
 import 'package:flutter/services.dart';
 
-class SnakeGame extends FlameGame with KeyboardEvents, PanDetector, TapDetector {
+class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
   late Snake snake;
   late Food food;
   GameState gameState = GameState.playing;
@@ -23,6 +23,30 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector, TapDetector 
     );
     food = Food(tileSize: size.x / 30);
     spawnFood();
+  }
+
+  @override
+  bool onPanUpdate(DragUpdateInfo info) {
+    if (gameState != GameState.playing) return true;
+
+    final delta = info.delta.global;
+    // Determine if the drag is more horizontal or vertical
+    if (delta.x.abs() > delta.y.abs()) {
+      // Horizontal movement
+      if (delta.x > 0 && snake.direction != Direction.left) {
+        snake.changeDirection(Direction.right);
+      } else if (delta.x < 0 && snake.direction != Direction.right) {
+        snake.changeDirection(Direction.left);
+      }
+    } else {
+      // Vertical movement
+      if (delta.y > 0 && snake.direction != Direction.up) {
+        snake.changeDirection(Direction.down);
+      } else if (delta.y < 0 && snake.direction != Direction.down) {
+        snake.changeDirection(Direction.up);
+      }
+    }
+    return true;
   }
 
   void gameOver() {
@@ -111,4 +135,4 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector, TapDetector 
     }
     return KeyEventResult.handled;
   }
-} 
+}
