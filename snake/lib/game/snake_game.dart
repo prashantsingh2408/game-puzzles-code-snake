@@ -87,7 +87,7 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
       snake.grow();
     }
     
-    if (snake.checkSelfCollision()) {
+    if (settings.selfCollision && snake.checkSelfCollision()) {
       gameOver();
     }
   }

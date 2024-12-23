@@ -96,6 +96,21 @@ class _SettingsMenuState extends State<SettingsMenu> {
                 });
               },
             ),
+            SwitchListTile(
+              title: const Text('Self Collision', style: TextStyle(color: Colors.white)),
+              subtitle: const Text(
+                'Snake dies when hitting itself',
+                style: TextStyle(color: Colors.grey),
+              ),
+              value: settings.selfCollision,
+              activeColor: Colors.green,
+              onChanged: (value) {
+                setState(() {
+                  settings.updateSettings(selfCollision: value);
+                  widget.onSettingsChanged();
+                });
+              },
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
