@@ -7,6 +7,8 @@ import 'snake.dart';
 import 'food.dart';
 import '../constants/game_constants.dart';
 import 'package:flutter/services.dart';
+import 'game_settings.dart';
+import 'dart:async' as async;
 
 class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
   late Snake snake;
@@ -14,15 +16,21 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
   GameState gameState = GameState.playing;
   int score = 0;
   final random = Random();
+  final GameSettings settings = GameSettings();
+  async.Timer? gameTimer;
+  int remainingTime = 0;
+  Function? onTimerChanged;
 
   @override
   Future<void> onLoad() async {
+    await super.onLoad();
     snake = Snake(
       position: Vector2(size.x / 2, size.y / 2),
       tileSize: size.x / 30,
     );
     food = Food(tileSize: size.x / 30);
     spawnFood();
+    startGame();
   }
 
   @override
@@ -50,15 +58,18 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
   }
 
   void gameOver() {
+    gameTimer?.cancel();
     gameState = GameState.gameOver;
     Future.delayed(const Duration(seconds: 2), resetGame);
   }
 
   void resetGame() {
+    gameTimer?.cancel();
     snake.reset(Vector2(size.x / 2, size.y / 2));
     score = 0;
     gameState = GameState.playing;
     spawnFood();
+    startGame();
   }
 
   @override
@@ -69,6 +80,9 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
     
     if (snake.checkFoodCollision(food.position)) {
       score += 10;
+      if (settings.timerMode) {
+        score += remainingTime * 2;
+      }
       spawnFood();
       snake.grow();
     }
@@ -80,6 +94,21 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
 
   void spawnFood() {
     food.spawn(size, snake.segments);
+    if (settings.timerMode) {
+      resetFoodTimer();
+    }
+  }
+
+  void resetFoodTimer() {
+    gameTimer?.cancel();
+    remainingTime = settings.timerDuration;
+    gameTimer = async.Timer.periodic(Duration(seconds: 1), (timer) {
+      remainingTime--;
+      onTimerChanged?.call();
+      if (remainingTime <= 0) {
+        gameOver();
+      }
+    });
   }
 
   @override
@@ -102,8 +131,6 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
         fontWeight: FontWeight.bold,
       ),
     );
-
-    textPaint.render(canvas, 'Score: $score', Vector2(20, 20));
 
     if (gameState == GameState.gameOver) {
       textPaint.render(
@@ -134,5 +161,16 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
       }
     }
     return KeyEventResult.handled;
+  }
+
+  void startGame() {
+    if (settings.timerMode) {
+      resetFoodTimer();
+    }
+  }
+
+  String getFormattedTime() {
+    if (!settings.timerMode) return '';
+    return remainingTime.toString();
   }
 }
