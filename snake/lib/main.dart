@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flame/game.dart';
 import 'game/snake_game.dart';
-import 'widgets/settings_menu.dart';
+import 'widgets/game_overlay.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,82 +61,15 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
           ),
-          // UI Overlay
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Score on the left
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.black45,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Text(
-                      'Score: ${game.score}',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  // Timer and Settings on the right
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (game.settings.timerMode)
-                        Container(
-                          margin: const EdgeInsets.only(right: 16),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.black45,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Text(
-                            game.getFormattedTime(),
-                            style: const TextStyle(
-                              fontSize: 24,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black45,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: IconButton(
-                          padding: const EdgeInsets.all(12),
-                          iconSize: 32,
-                          icon: const Icon(Icons.settings, color: Colors.white),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              barrierColor: Colors.black54,
-                              builder: (context) => SettingsMenu(
-                                onSettingsChanged: () {
-                                  if (mounted) {
-                                    setState(() {
-                                      game.startGame();
-                                    });
-                                  }
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+          GameOverlay(
+            game: game,
+            onSettingsChanged: () {
+              if (mounted) {
+                setState(() {
+                  game.startGame();
+                });
+              }
+            },
           ),
         ],
       ),
