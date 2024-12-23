@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 enum GameState { playing, paused, gameOver }
+enum Direction { up, down, left, right }
 
 class GameConstants {
   static const double moveSpeed = 200.0;
@@ -9,6 +10,7 @@ class GameConstants {
   static const double glowStrength = 3.0;
   static const double smoothingFactor = 0.8;
   static const double tension = 0.5;
+  static const maxSegments = 20;
 }
 
 class GameColors {

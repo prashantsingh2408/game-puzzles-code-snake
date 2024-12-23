@@ -6,13 +6,15 @@ class Snake {
   List<Vector2> segments;
   Vector2 velocity;
   final double tileSize;
+  Direction direction;
   
   Snake({required Vector2 position, required this.tileSize})
       : segments = List.generate(
           5,
           (i) => position + Vector2(0, i * GameConstants.segmentSpacing),
         ),
-        velocity = Vector2(0, GameConstants.moveSpeed);
+        velocity = Vector2(0, GameConstants.moveSpeed),
+        direction = Direction.up;
 
   void update(double dt, Vector2 screenSize) {
     final head = segments.last;
@@ -81,6 +83,7 @@ class Snake {
       (i) => position + Vector2(0, i * GameConstants.segmentSpacing),
     );
     velocity = Vector2(0, GameConstants.moveSpeed);
+    direction = Direction.up;
   }
 
   void render(Canvas canvas) {
@@ -135,5 +138,32 @@ class Snake {
           GameConstants.glowStrength,
         ),
     );
+  }
+
+  void changeDirection(Direction newDirection) {
+    // Prevent 180 degree turns
+    if ((direction == Direction.up && newDirection == Direction.down) ||
+        (direction == Direction.down && newDirection == Direction.up) ||
+        (direction == Direction.left && newDirection == Direction.right) ||
+        (direction == Direction.right && newDirection == Direction.left)) {
+      return;
+    }
+    
+    direction = newDirection;
+    // Update velocity based on direction
+    switch (direction) {
+      case Direction.up:
+        velocity = Vector2(0, -GameConstants.moveSpeed);
+        break;
+      case Direction.down:
+        velocity = Vector2(0, GameConstants.moveSpeed);
+        break;
+      case Direction.left:
+        velocity = Vector2(-GameConstants.moveSpeed, 0);
+        break;
+      case Direction.right:
+        velocity = Vector2(GameConstants.moveSpeed, 0);
+        break;
+    }
   }
 } 

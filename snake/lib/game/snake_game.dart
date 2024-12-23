@@ -6,6 +6,7 @@ import 'dart:math';
 import 'snake.dart';
 import 'food.dart';
 import '../constants/game_constants.dart';
+import 'package:flutter/services.dart';
 
 class SnakeGame extends FlameGame with KeyboardEvents, PanDetector, TapDetector {
   late Snake snake;
@@ -88,5 +89,26 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector, TapDetector 
         anchor: Anchor.center,
       );
     }
+  }
+
+  @override
+  KeyEventResult onKeyEvent(
+    KeyEvent event,
+    Set<LogicalKeyboardKey> keysPressed,
+  ) {
+    if (gameState != GameState.playing) return KeyEventResult.handled;
+    
+    if (event is KeyDownEvent || event is KeyRepeatEvent) {
+      if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
+        snake.changeDirection(Direction.up);
+      } else if (keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
+        snake.changeDirection(Direction.down);
+      } else if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
+        snake.changeDirection(Direction.left);
+      } else if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
+        snake.changeDirection(Direction.right);
+      }
+    }
+    return KeyEventResult.handled;
   }
 } 
