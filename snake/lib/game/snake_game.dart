@@ -43,6 +43,7 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
       position: Vector2(size.x / 2, size.y / 2),
       tileSize: size.x / 30,
       settings: settings,
+      color: settings.snakeColor,
     );
     food = Food(tileSize: size.x / 30);
     spawnFood();
@@ -91,6 +92,8 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
   @override
   void update(double dt) {
     if (gameState != GameState.playing) return;
+    
+    snake.color = settings.snakeColor;
     
     snake.update(dt, size);
     

@@ -11,6 +11,7 @@ class Snake {
   final double tileSize;
   Direction direction;
   final GameSettings settings;
+  Color color;
   
   // Add new property for fire effect
   final List<double> _fireOffsets = List.generate(60, (i) => math.Random().nextDouble());
@@ -23,7 +24,9 @@ class Snake {
     required Vector2 position, 
     required this.tileSize,
     required this.settings,
-  })  : segments = List.generate(
+    required Color color,
+  })  : this.color = color,
+        segments = List.generate(
           5,
           (i) => position + Vector2(0, i * GameConstants.segmentSpacing),
         ),
@@ -170,7 +173,7 @@ class Snake {
     canvas.drawPath(
       path,
       Paint()
-        ..color = GameColors.snakeBody
+        ..color = color
         ..style = PaintingStyle.stroke
         ..strokeWidth = tileSize
         ..strokeCap = StrokeCap.round
