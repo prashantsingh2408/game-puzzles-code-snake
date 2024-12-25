@@ -11,6 +11,8 @@ class GameConstants {
   static const double smoothingFactor = 0.8;
   static const double tension = 0.5;
   static const maxSegments = 20;
+  static const double gameWidth = 800;
+  static const double gameHeight = 600;
 }
 
 class GameColors {

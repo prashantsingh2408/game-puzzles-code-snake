@@ -6,7 +6,7 @@ class GameSettings {
   bool timerMode = false;
   int timerDuration = 10; // Default 10 seconds to pick up food
   double gameSpeed = 1.0;
-  bool wallCollision = true;
+  bool wallCollision = false;
   bool selfCollision = true;
 
   void updateSettings({

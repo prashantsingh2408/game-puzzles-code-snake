@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import '../constants/game_constants.dart';
+import 'dart:math' as math;
+import 'fire_border.dart';
+import 'game_settings.dart';
 
 class Snake {
   List<Vector2> segments;
   Vector2 velocity;
   final double tileSize;
   Direction direction;
+  final GameSettings settings;
   
-  Snake({required Vector2 position, required this.tileSize})
-      : segments = List.generate(
+  // Add new property for fire effect
+  final List<double> _fireOffsets = List.generate(60, (i) => math.Random().nextDouble());
+  double _fireAnimationTime = 0;
+
+  // Make fireBorder public
+  final FireBorder fireBorder = FireBorder();
+
+  Snake({
+    required Vector2 position, 
+    required this.tileSize,
+    required this.settings,
+  })  : segments = List.generate(
           5,
           (i) => position + Vector2(0, i * GameConstants.segmentSpacing),
         ),
@@ -17,17 +31,48 @@ class Snake {
         direction = Direction.up;
 
   void update(double dt, Vector2 screenSize) {
+    fireBorder.update(dt);
+    
     final head = segments.last;
     final newHead = head + velocity * dt;
     
-    // Screen wrapping
-    if (newHead.x < 0) newHead.x = screenSize.x;
-    if (newHead.x > screenSize.x) newHead.x = 0;
-    if (newHead.y < 0) newHead.y = screenSize.y;
-    if (newHead.y > screenSize.y) newHead.y = 0;
+    // Handle wall collision based on settings
+    if (_handleWallCollision(newHead, screenSize)) {
+      return;
+    }
     
     updateSegments();
     segments.last = newHead;
+  }
+
+  bool _handleWallCollision(Vector2 newHead, Vector2 screenSize) {
+    bool hasCollision = newHead.x < 0 || 
+        newHead.x > screenSize.x - tileSize || 
+        newHead.y < 0 || 
+        newHead.y > screenSize.y - tileSize;
+
+    if (!hasCollision) return false;
+
+    // If wall collision is enabled, reset the game
+    if (settings.wallCollision) {
+      reset(Vector2(screenSize.x / 2, screenSize.y / 2));
+      return true;
+    }
+    
+    // If wall collision is disabled, wrap around
+    if (newHead.x < 0) {
+      segments.last = Vector2(screenSize.x - tileSize, newHead.y);
+    } else if (newHead.x > screenSize.x - tileSize) {
+      segments.last = Vector2(0, newHead.y);
+    }
+    
+    if (newHead.y < 0) {
+      segments.last = Vector2(newHead.x, screenSize.y - tileSize);
+    } else if (newHead.y > screenSize.y - tileSize) {
+      segments.last = Vector2(newHead.x, 0);
+    }
+    
+    return true;
   }
 
   void updateSegments() {
@@ -86,7 +131,12 @@ class Snake {
     direction = Direction.up;
   }
 
-  void render(Canvas canvas) {
+  void render(Canvas canvas, Vector2 screenSize) {
+    // Draw fire border only if wall collision is enabled
+    if (settings.wallCollision) {
+      fireBorder.render(canvas, screenSize);
+    }
+    
     final path = Path();
     
     if (segments.length > 1) {
