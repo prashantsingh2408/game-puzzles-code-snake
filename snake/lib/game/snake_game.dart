@@ -22,6 +22,10 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
   late final Snake snake;
   late final Food food;
 
+  double normalSpeed = 1.0;
+  double currentSpeed = 1.0;
+  async.Timer? powerUpTimer;
+
   SnakeGame()
     : settings = GameSettings(),
       scoreManager = ScoreManager(),
@@ -95,7 +99,7 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
     
     snake.color = settings.snakeColor;
     
-    snake.update(dt, size);
+    snake.update(dt * currentSpeed, size);
     
     if (snake.checkFoodCollision(food.position)) {
       scoreManager.score += 10;
@@ -129,7 +133,7 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
   void resetFoodTimer() {
     gameTimer?.cancel();
     timerManager.remainingTime = settings.timerDuration;
-    gameTimer = async.Timer.periodic(Duration(seconds: 1), (timer) {
+    gameTimer = async.Timer.periodic(const Duration(seconds: 1), (timer) {
       timerManager.remainingTime--;
       timerManager.onTimerChanged?.call();
       if (timerManager.remainingTime <= 0) {
@@ -202,4 +206,27 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
   }
 
   int get score => scoreManager.score;
+
+  void activateSpeedUp() {
+    currentSpeed = 2.0;
+    powerUpTimer?.cancel();
+    powerUpTimer = async.Timer(const Duration(seconds: 10), () {
+      currentSpeed = normalSpeed;
+    });
+  }
+
+  void activateSlowDown() {
+    currentSpeed = 0.5;
+    powerUpTimer?.cancel();
+    powerUpTimer = async.Timer(const Duration(seconds: 10), () {
+      currentSpeed = normalSpeed;
+    });
+  }
+
+  @override
+  void onRemove() {
+    powerUpTimer?.cancel();
+    gameTimer?.cancel();
+    super.onRemove();
+  }
 }

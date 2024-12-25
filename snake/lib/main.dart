@@ -60,16 +60,21 @@ class _GameScreenState extends State<GameScreen> {
                 color: Colors.green,
               ),
             ),
-          ),
-          GameOverlay(
-            game: game,
-            onSettingsChanged: () {
-              if (mounted) {
-                setState(() {
-                  game.startGame();
-                });
-              }
+            overlayBuilderMap: {
+              'gameOverlay': (context, _) => GameOverlay(
+                game: game,
+                onSettingsChanged: () {
+                  if (mounted) {
+                    setState(() {
+                      game.startGame();
+                    });
+                  }
+                },
+                onSpeedUp: () => game.activateSpeedUp(),
+                onSlowDown: () => game.activateSlowDown(),
+              ),
             },
+            initialActiveOverlays: const ['gameOverlay'],
           ),
         ],
       ),
