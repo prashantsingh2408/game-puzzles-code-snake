@@ -11,6 +11,7 @@ import 'game_settings.dart';
 import 'dart:async' as async;
 import 'score_manager.dart';
 import 'timer_manager.dart';
+import 'package:flame/extensions.dart';
 
 class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
   GameState gameState = GameState.playing;
@@ -26,6 +27,8 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
   double currentSpeed = 1.0;
   async.Timer? powerUpTimer;
 
+  late Sprite backgroundSprite;
+
   SnakeGame()
     : settings = GameSettings(),
       scoreManager = ScoreManager(),
@@ -38,6 +41,13 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+    
+    try {
+      backgroundSprite = await loadSprite('bg.jpg');
+    } catch (e) {
+      print('Error loading background: $e');
+    }
+    
     _initializeGameComponents();
     startGame();
   }
@@ -144,10 +154,18 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
 
   @override
   void render(Canvas canvas) {
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.x, size.y),
-      Paint()..color = GameColors.background,
-    );
+    if (backgroundSprite != null) {
+      backgroundSprite.render(
+        canvas,
+        position: Vector2.zero(),
+        size: size,
+      );
+    } else {
+      canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.x, size.y),
+        Paint()..color = GameColors.background,
+      );
+    }
 
     snake.render(canvas, size);
     food.render(canvas);
