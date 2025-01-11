@@ -1,52 +1,75 @@
-# Snake Game Implementation
+# Snake Game Implementation Guide
 
-A classic Snake game built with Flutter and Flame engine.
+## Overview
+A modern Snake game implementation using Flutter and Flame engine, featuring smooth movement, multiple control schemes, and customizable settings.
 
 ## Project Structure
 
-### Core Game Files
-- `snake_game.dart` - Main game class handling game loop, input and rendering
-- `snake.dart` - Snake entity with movement and collision logic
-- `food.dart` - Food entity that snake collects
-- `game_settings.dart` - Game configuration and settings
+### Core Files
+- `main.dart` - Entry point and game initialization
+- `game/snake_game.dart` - Core game loop and state management
+- `game/snake.dart` - Snake entity implementation
+- `game/food.dart` - Food spawning and collection
+- `game/game_settings.dart` - Game configuration
 
-### Constants
-- `game_constants.dart` - Game-wide constants and enums
+### Components
+- `components/collision_handler.dart` - Collision detection system
+- `components/movement_controller.dart` - Movement control system
+- `components/game_component.dart` - Base component class
 
-### UI Components  
-- `game_overlay.dart` - HUD overlay with score and settings
-- `score_display.dart` - Score UI widget
-- `timer_display.dart` - Timer UI widget
-- `settings_menu.dart` - Game settings menu
+### UI Widgets
+- `widgets/game_overlay.dart` - Main game HUD
+- `widgets/settings_menu.dart` - Settings dialog
+- `widgets/score_display.dart` - Score widget
+- `widgets/timer_display.dart` - Timer widget
+- `widgets/color_picker_*.dart` - Color selection widgets
 
-## Features
+## Key Features
+
+### Core Mechanics
 - Smooth snake movement with segment following
 - Touch/swipe and keyboard controls
-- Score tracking
+- Food collection and scoring
+- Optional wall and self collisions
 - Timer mode with countdown
-- Configurable settings:
-  - Game speed
-  - Wall collision
-  - Self collision
-  - Timer mode
 
-## Implementation Details
+### Visual Elements  
+- Glowing snake head effect
+- Fire border for wall collision
+- Curved snake body segments
+- Custom background support
 
-### Snake Movement
-The snake moves continuously in the current direction. Each segment follows the one in front of it with smooth interpolation.
+### Customization Options
+- Timer mode toggle
+- Game speed control
+- Collision settings
+- Snake color picker
 
-### Collision Detection
-- Food collection checked via distance between snake head and food
-- Self collision checked between head and all body segments
-- Optional wall collision with screen boundaries
+## Implementation Guide
 
-### Controls
-- Swipe/drag gestures for touch input
-- Arrow keys for keyboard input
-- Direction changes prevented from reversing directly
+1. Game initialization is handled in `main.dart`
 
-### Rendering
-- Snake drawn as connected segments with smooth curves
-- Glowing head effect
-- Food with pulsing glow effect
-- Clean minimal UI overlay
+2. Core game logic is in `snake_game.dart`
+
+3. Snake movement and collision systems are in respective component files
+
+4. UI overlay and settings are managed through widget files
+
+5. Constants and configurations are in `game_constants.dart`
+
+## Development Tips
+
+- Review component files for implementation details
+- Check widget files for UI customization
+- See constants file for adjustable parameters
+- Follow existing patterns when adding features
+
+## Future Improvements
+
+- Multiplayer support
+- Additional power-ups
+- Sound effects
+- Level system
+- High score tracking
+
+For detailed implementation, refer to the source code files in the respective directories.
