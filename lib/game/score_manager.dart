@@ -1,10 +1,18 @@
+import 'package:flutter/foundation.dart';
+
 class ScoreManager {
-  int _score = 0;
+  final ValueNotifier<int> _scoreNotifier = ValueNotifier<int>(0);
   
-  int get score => _score;
-  set score(int value) => _score = value;
+  int get score => _scoreNotifier.value;
+  set score(int value) => _scoreNotifier.value = value;
+  
+  ValueNotifier<int> get scoreNotifier => _scoreNotifier;
   
   void addPoints(int points) {
-    _score += points;
+    _scoreNotifier.value += points;
+  }
+  
+  void reset() {
+    _scoreNotifier.value = 0;
   }
 } 

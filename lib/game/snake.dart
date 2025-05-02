@@ -13,6 +13,13 @@ class Snake {
   final GameSettings settings;
   Color color;
   
+  // Add health system
+  int maxHealth = 5;
+  final ValueNotifier<int> _healthNotifier = ValueNotifier<int>(5);
+  bool isInvulnerable = false;
+  double invulnerableTimer = 0;
+  static const double INVULNERABLE_DURATION = 1.5; // seconds of invulnerability after hit
+  
   // Add new property for fire effect
   final List<double> _fireOffsets = List.generate(60, (i) => math.Random().nextDouble());
   double _fireAnimationTime = 0;
@@ -33,13 +40,40 @@ class Snake {
         velocity = Vector2(0, GameConstants.moveSpeed),
         direction = Direction.up;
 
+  int get health => _healthNotifier.value;
+  ValueNotifier<int> get healthNotifier => _healthNotifier;
+
+  void takeDamage() {
+    if (!isInvulnerable) {
+      _healthNotifier.value--;
+      isInvulnerable = true;
+      invulnerableTimer = INVULNERABLE_DURATION;
+      
+      // Make the snake flash red when taking damage
+      color = Colors.red;
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (isInvulnerable) {
+          color = settings.snakeColor;
+        }
+      });
+    }
+  }
+
   void update(double dt, Vector2 screenSize) {
     fireBorder.update(dt);
+    
+    // Update invulnerability timer
+    if (isInvulnerable) {
+      invulnerableTimer -= dt;
+      if (invulnerableTimer <= 0) {
+        isInvulnerable = false;
+      }
+    }
     
     final head = segments.last;
     final newHead = head + velocity * dt;
     
-    // Handle wall collision based on settings
+    // Handle wall collision based on settings and viewport mode
     if (_handleWallCollision(newHead, screenSize)) {
       return;
     }
@@ -49,6 +83,11 @@ class Snake {
   }
 
   bool _handleWallCollision(Vector2 newHead, Vector2 screenSize) {
+    // In infinite mode, no wall collision or wrapping
+    if (settings.infiniteViewport) {
+      return false;
+    }
+
     bool hasCollision = newHead.x < 0 || 
         newHead.x > screenSize.x - tileSize || 
         newHead.y < 0 || 
@@ -62,7 +101,7 @@ class Snake {
       return true;
     }
     
-    // If wall collision is disabled, wrap around
+    // If wall collision is disabled, wrap around (only in fixed viewport mode)
     if (newHead.x < 0) {
       segments.last = Vector2(screenSize.x - tileSize, newHead.y);
     } else if (newHead.x > screenSize.x - tileSize) {
@@ -103,7 +142,9 @@ class Snake {
   }
 
   bool checkFoodCollision(Vector2 foodPosition) {
-    return (segments.last - foodPosition).length < tileSize;
+    final head = segments.last;
+    final collisionDistance = tileSize * 1.2; // Slightly larger collision area for better gameplay
+    return (head - foodPosition).length < collisionDistance;
   }
 
   bool checkSelfCollision() {
@@ -132,6 +173,9 @@ class Snake {
     );
     velocity = Vector2(0, GameConstants.moveSpeed);
     direction = Direction.up;
+    _healthNotifier.value = maxHealth;
+    isInvulnerable = false;
+    invulnerableTimer = 0;
   }
 
   void render(Canvas canvas, Vector2 screenSize) {
@@ -170,26 +214,33 @@ class Snake {
       }
     }
 
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = color
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = tileSize
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round
-        ..isAntiAlias = true,
-    );
+    // Draw snake body with flashing effect when invulnerable
+    final bodyPaint = Paint()
+      ..color = isInvulnerable ? 
+          color.withOpacity((math.sin(invulnerableTimer * 10) + 1) / 2) : 
+          color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = tileSize
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..isAntiAlias = true;
+
+    canvas.drawPath(path, bodyPaint);
+
+    // Draw snake head
+    final headPaint = Paint()
+      ..color = isInvulnerable ? 
+          GameColors.snakeHead.withOpacity((math.sin(invulnerableTimer * 10) + 1) / 2) : 
+          GameColors.snakeHead
+      ..maskFilter = const MaskFilter.blur(
+        BlurStyle.outer,
+        GameConstants.glowStrength,
+      );
 
     canvas.drawCircle(
       Offset(segments.last.x, segments.last.y),
       tileSize / 2,
-      Paint()
-        ..color = GameColors.snakeHead
-        ..maskFilter = const MaskFilter.blur(
-          BlurStyle.outer,
-          GameConstants.glowStrength,
-        ),
+      headPaint,
     );
   }
 

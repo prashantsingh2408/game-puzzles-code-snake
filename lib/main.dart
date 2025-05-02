@@ -41,42 +41,27 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     game = SnakeGame();
-    game.onTimerChanged = () {
-      if (mounted) {
-        setState(() {});
-      }
-    };
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          GameWidget(
-            game: game,
-            loadingBuilder: (context) => const Center(
-              child: CircularProgressIndicator(
-                color: Colors.green,
-              ),
-            ),
-            overlayBuilderMap: {
-              'gameOverlay': (context, _) => GameOverlay(
-                game: game,
-                onSettingsChanged: () {
-                  if (mounted) {
-                    setState(() {
-                      game.startGame();
-                    });
-                  }
-                },
-                onSpeedUp: () => game.activateSpeedUp(),
-                onSlowDown: () => game.activateSlowDown(),
-              ),
-            },
-            initialActiveOverlays: const ['gameOverlay'],
+      body: GameWidget(
+        game: game,
+        loadingBuilder: (context) => const Center(
+          child: CircularProgressIndicator(
+            color: Colors.green,
           ),
-        ],
+        ),
+        overlayBuilderMap: {
+          'gameOverlay': (context, _) => GameOverlay(
+            game: game,
+            onSettingsChanged: () => game.startGame(),
+            onSpeedUp: () => game.activateSpeedUp(),
+            onSlowDown: () => game.activateSlowDown(),
+          ),
+        },
+        initialActiveOverlays: const ['gameOverlay'],
       ),
     );
   }
