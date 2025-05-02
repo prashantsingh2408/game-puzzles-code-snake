@@ -154,7 +154,7 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
 
   @override
   void render(Canvas canvas) {
-    if (backgroundSprite != null) {
+    if (settings.useBackgroundImage && backgroundSprite != null) {
       backgroundSprite.render(
         canvas,
         position: Vector2.zero(),
@@ -163,7 +163,7 @@ class SnakeGame extends FlameGame with KeyboardEvents, PanDetector {
     } else {
       canvas.drawRect(
         Rect.fromLTWH(0, 0, size.x, size.y),
-        Paint()..color = GameColors.background,
+        Paint()..color = settings.backgroundColor,
       );
     }
 

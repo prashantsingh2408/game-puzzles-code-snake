@@ -100,6 +100,31 @@ class _SettingsMenuState extends State<SettingsMenu> {
                 },
               ),
             ),
+            _buildSettingRow(
+              'Use Background Image',
+              Switch(
+                value: settings.useBackgroundImage,
+                onChanged: (value) {
+                  setState(() {
+                    settings.updateSettings(useBackgroundImage: value);
+                    widget.onSettingsChanged();
+                  });
+                },
+              ),
+            ),
+            if (!settings.useBackgroundImage)
+              _buildSettingRow(
+                'Background Color',
+                ColorPickerButton(
+                  currentColor: settings.backgroundColor,
+                  onColorChanged: (color) {
+                    setState(() {
+                      settings.updateSettings(backgroundColor: color);
+                      widget.onSettingsChanged();
+                    });
+                  },
+                ),
+              ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(),

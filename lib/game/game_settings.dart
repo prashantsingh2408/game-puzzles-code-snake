@@ -6,6 +6,8 @@ class GameSettings {
   GameSettings._internal() {
     // Initialize default values
     snakeColor = Colors.green;
+    backgroundColor = Colors.black;
+    useBackgroundImage = true;
   }
 
   bool timerMode = false;
@@ -14,6 +16,8 @@ class GameSettings {
   bool wallCollision = false;
   bool selfCollision = true;
   Color snakeColor = Colors.green;
+  Color backgroundColor = Colors.black;
+  bool useBackgroundImage = true;
 
   void updateSettings({
     bool? timerMode,
@@ -22,6 +26,8 @@ class GameSettings {
     bool? wallCollision,
     bool? selfCollision,
     Color? snakeColor,
+    Color? backgroundColor,
+    bool? useBackgroundImage,
   }) {
     this.timerMode = timerMode ?? this.timerMode;
     this.timerDuration = timerDuration ?? this.timerDuration;
@@ -29,5 +35,7 @@ class GameSettings {
     this.wallCollision = wallCollision ?? this.wallCollision;
     this.selfCollision = selfCollision ?? this.selfCollision;
     this.snakeColor = snakeColor ?? this.snakeColor;
+    this.backgroundColor = backgroundColor ?? this.backgroundColor;
+    this.useBackgroundImage = useBackgroundImage ?? this.useBackgroundImage;
   }
 } 
