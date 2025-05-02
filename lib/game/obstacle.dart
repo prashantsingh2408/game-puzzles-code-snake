@@ -70,18 +70,6 @@ class Obstacle {
     canvas.scale(size.x * 0.5, size.y * 0.5);
     _drawRockShape(canvas, _paint);
     canvas.restore();
-
-    // Draw collision boundary for debugging
-    final debugPaint = Paint()
-      ..color = Colors.red.withOpacity(0.2)
-      ..style = PaintingStyle.fill;
-    final center = Offset(position.x + size.x / 2, position.y + size.y / 2);
-    final collisionRadius = max(size.x, size.y) / 2 + COLLISION_BUFFER;
-    canvas.drawCircle(
-      center,
-      collisionRadius,
-      debugPaint
-    );
   }
 
   void _drawRockShape(Canvas canvas, Paint paint) {

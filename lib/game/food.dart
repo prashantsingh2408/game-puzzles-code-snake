@@ -8,7 +8,7 @@ class Food {
   final double tileSize;
   bool isInfiniteMode = false;
   final Random _random = Random();
-  final Paint _paint = Paint()..color = Colors.red;
+  final Paint _paint = Paint();
   
   Food({
     required this.tileSize,
@@ -37,42 +37,60 @@ class Food {
     // Make food larger in infinite mode for easier collision
     final size = isInfiniteMode ? tileSize * 2.0 : tileSize;
     
-    // Draw a pulsing apple-like shape for better visibility
     canvas.save();
     canvas.translate(position.x, position.y);
     
-    // Draw apple body
-    _paint.color = Colors.red;
-    canvas.drawCircle(Offset.zero, size / 2, _paint);
-    
-    // Draw stem
-    _paint.color = Colors.brown;
-    canvas.drawRect(
+    // Draw mouse body (gray oval)
+    _paint.color = Colors.grey.shade400;
+    canvas.drawOval(
       Rect.fromCenter(
-        center: Offset(0, -size / 2),
-        width: size / 6,
-        height: size / 3
+        center: Offset.zero,
+        width: size,
+        height: size / 1.5,
       ),
       _paint
     );
     
-    // Draw leaf
-    _paint.color = Colors.green;
-    final leafPath = Path()
-      ..moveTo(size / 12, -size / 2)
-      ..quadraticBezierTo(size / 3, -size / 1.5, size / 6, -size / 1.2)
-      ..quadraticBezierTo(0, -size / 1.4, size / 12, -size / 2);
-    canvas.drawPath(leafPath, _paint);
+    // Draw mouse head
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(size / 2.5, 0),
+        width: size / 2,
+        height: size / 2.5,
+      ),
+      _paint
+    );
+    
+    // Draw mouse ears
+    _paint.color = Colors.pink.shade200;
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(size / 2, -size / 4),
+        width: size / 4,
+        height: size / 4,
+      ),
+      _paint
+    );
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(size / 2, size / 4),
+        width: size / 4,
+        height: size / 4,
+      ),
+      _paint
+    );
+    
+    // Draw mouse tail
+    _paint.color = Colors.grey.shade400;
+    final tailPath = Path()
+      ..moveTo(-size / 2, 0)
+      ..quadraticBezierTo(-size, size / 2, -size, 0);
+    canvas.drawPath(tailPath, _paint);
+    
+    // Draw mouse eyes
+    _paint.color = Colors.black;
+    canvas.drawCircle(Offset(size / 2 + size / 8, -size / 10), size / 12, _paint);
     
     canvas.restore();
-    
-    // Draw collision boundary for debugging in infinite mode
-    if (isInfiniteMode) {
-      canvas.drawCircle(
-        Offset(position.x, position.y),
-        size * 1.5,
-        Paint()..color = Colors.yellow.withOpacity(0.3)
-      );
-    }
   }
 } 
