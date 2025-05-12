@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flame/game.dart';
 import 'game/snake_game.dart';
 import 'widgets/game_overlay.dart';
+import 'widgets/start_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +37,7 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   late SnakeGame game;
+  bool isGameStarted = false;
 
   @override
   void initState() {
@@ -43,8 +45,19 @@ class _GameScreenState extends State<GameScreen> {
     game = SnakeGame();
   }
 
+  void startGame() {
+    setState(() {
+      isGameStarted = true;
+    });
+    game.startGame();
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!isGameStarted) {
+      return StartScreen(onStartPressed: startGame);
+    }
+
     return Scaffold(
       body: GameWidget(
         game: game,
